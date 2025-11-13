@@ -9,6 +9,7 @@ This stack includes:
 - **VPN:** For secure and private media downloading
 - **Radarr:** For movie management
 - **Sonarr:** For TV show management
+- **Bazarr:** Subtitle management and automation for Radarr/Sonarr
 - **Prowlarr:** A torrent indexer manager for Radarr/Sonarr
 - **qBittorrent:** Torrent client for downloading media
 - **Jellyseerr:** To manage media requests
@@ -148,6 +149,15 @@ Sonarr can also be configured in similar way.
 - When you access the jellyseerr for first time using browser, A guided configuration will guide you to configure jellyseerr. Just follow the guide and provide the required details about sonarr and Radarr.
 - Follow the Overseerr document (Jellyseerr is fork of overseerr) for detailed setup - https://docs.overseerr.dev/ 
 
+## Configure Bazarr
+
+- Open Bazarr at http://localhost:6767
+- Create a profile language : Settings -> Languages -> Languages Profile
+- Connect to Radarr and Sonarr: Settings -> Radar/Sonarr -> Add Radarr (http://radarr:7878) and Sonarr (http://sonarr:8989)
+  - If VPN is enabled and Radarr/Sonarr use static container IPs, use their IPs instead (for example, http://172.20.0.10:7878 and http://172.20.0.11:8989)
+- Run a library sync to import titles from Radarr/Sonarr
+- Follow the Bazarr document for detailed setup : (https://wiki.bazarr.media/Getting-Started/Setup-Guide/)
+
 ## Configure Prowlarr
 
 - Open Prowlarr at http://localhost:9696
@@ -212,6 +222,25 @@ location /sonarr {
     proxy_set_header Connection $http_connection;
   }
 ```
+
+## Bazarr Nginx reverse proxy
+
+- Settings --> General --> URL Base --> Add base (/bazarr)
+- Add below proxy in nginx configuration
+
+```
+location /bazarr {
+    proxy_pass http://bazarr:6767;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection $http_connection;
+  }
+```
+
+- Restart containers.
 
 ## Prowlarr Nginx reverse proxy
 

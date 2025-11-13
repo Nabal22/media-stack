@@ -13,7 +13,6 @@ This stack includes:
 - **qBittorrent:** Torrent client for downloading media
 - **Jellyseerr:** To manage media requests
 - **Jellyfin:** Open-source media streamer
-- **Recommendarr:** For AI-powered movie and show recommendations
 
 ## Requirements
 
@@ -30,7 +29,6 @@ There are three ways to deploy this stack:
 
 1. **With a VPN** (Recommended)  
 2. **Without a VPN**  
-3. **With Recommendarr** (An optional tool for AI-generated movie and show recommendations)  
 
 > **NOTE:** If you are installing this stack **without a VPN**, you **must** use the `no-vpn` profile.  
 > This requirement prevents accidental or unintentional deployment of media-stack without VPN.  
@@ -107,25 +105,6 @@ docker compose --profile no-vpn up -d
 # docker compose -f docker-compose-nginx.yml up -d
 ```
 
-## Deploy the Stack with Recommendarr (Optional)  
-
-**Recommendarr** is a web application that uses AI to generate personalized TV show and movie recommendations based on your: 
-
-- **Sonarr** library  
-- **Radarr** library 
-- **Jellyfin** watchlist and library
-- **Trakt** watchlist (Optional)
-
-### Deploying with Recommendarr  
-
-Run the following command based on your setup:  
-
-```bash
-COMPOSE_PROFILES=vpn,recommendarr docker compose up -d  # With VPN
-
-# COMPOSE_PROFILES=no-vpn,recommendarr docker compose up -d  # Without VPN
-```
-
 ## Configure qBittorrent
 
 - Open qBitTorrent at http://localhost:5080. Default username is `admin`. Temporary password can be collected from container log `docker logs qbittorrent`
@@ -180,19 +159,6 @@ Sonarr can also be configured in similar way.
 
 **Note: If VPN is enabled, then Prowlarr will not be able to reach radarr and sonarr with localhost or container service name. In that case use static IP for sonarr and radarr in radarr/sonarr server field (for e.g. http://172.19.0.5:8989). Prowlar will also be not reachable with its container/service name. Use `http://vpn:9696` instead in prowlar server field.**
 
-## Configure Recommendarr
-
-Recommendarr is an AI based movies/tvshows recommendation tool. To use this you will need any OpenAI API URL and API key with atleast one LLM model running. You can host your own OpenAI server with AI model using ollama or LM Studio. Or you can check `https://openrouter.ai` for limited-free LLMs.
-
-- Open Recommendarr at http://localhost:3000
-- Login with default username `admin` and password `1234`
-- Settings --> Account --> Change Password and change your admin password
-- Settings --> AI service --> API URL (Add OpenAI server API URL) --> API Key (Add OpenAPI server API key) --> Fetch available models --> Set Max tokens (best to keep it under 2000) --> Set Temperature (Best to keep at 0.8)
-- Settings --> Sonarr --> Sonarr URL (http://sonarr:8989) --> API Keys (Sonarr API Key) --> Test Connection --> Save Sonarr setting
-- Settings --> Radarr --> Radarr URL (http://radarr:7878) --> API Keys (Radarr API Key) --> Test Connection --> Save Radarr setting
-- Settings --> Jellyfin --> Jellyfin URL (http://jellyfin:8096) --> API Keys (Jellyfin API Key) --> User ID (Add your jellyfin user id) --> Test Connection --> Save Jellyfin settings
-- Test recommendarr: Recommendations --> Choose LLM Model from drop down list --> Enable Jellyfin Watch History toggle --> Select language --> Choose genres --> Discover recommendations
-- You should be able to see recommendations based on your Jellyfin watch history
 
 ## Configure Nginx
 

@@ -23,14 +23,19 @@ services:
       - 443:443
     labels:
       - traefik.enable=true
-      - traefik.http.routers.traefik.rule=Host(`${DOMAIN}`)
+      # Dashboard accessible sur traefik.nabal.fr
+      - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
+      - traefik.http.routers.traefik.entrypoints=websecure
       - traefik.http.routers.traefik.tls=true
       - traefik.http.routers.traefik.tls.certresolver=le
       - traefik.http.routers.traefik.service=api@internal
-      - traefik.http.services.api.loadbalancer.server.port=8080
-      - traefik.http.routers.traefik.tls.domains[0].main=${DOMAIN}
-      - traefik.http.routers.traefik.middlewares=frontend
-      - traefik.http.middlewares.frontend.basicAuth.users=${HASHED_ADMIN_USER_PASS}
+      - traefik.http.routers.traefik.middlewares=traefik-auth
+      - traefik.http.middlewares.traefik-auth.basicauth.users=${HASHED_ADMIN_USER_PASS}
+      # Redirection HTTP -> HTTPS pour le dashboard
+      - traefik.http.routers.traefik-http.rule=Host(`traefik.${DOMAIN}`)
+      - traefik.http.routers.traefik-http.entrypoints=web
+      - traefik.http.routers.traefik-http.middlewares=redirect-to-https
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
       - traefik-le:/letsencrypt
@@ -44,7 +49,3 @@ volumes:
 networks:
   mynetwork:
     external: true
-
-# Generate HASHED_ADMIN_USER_PASS using below command
-# htpasswd -B -C 10 -c .htpasswd user1
-# cat .htpasswd | sed -e s/\\$/\\$\\$/g

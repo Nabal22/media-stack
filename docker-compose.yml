@@ -90,7 +90,7 @@ services:
   qbittorrent:
     profiles: ["vpn", "no-vpn"]
     container_name: qbittorrent
-    image: lscr.io/linuxserver/qbittorrent:5.1.2
+    image: lscr.io/linuxserver/qbittorrent:5.1.4
 
     # Uncomment below if vpn is enabled
     depends_on:               # Uncomment this line if vpn is enabled
@@ -123,7 +123,7 @@ services:
   radarr:
     profiles: ["vpn", "no-vpn"]
     container_name: radarr
-    image: lscr.io/linuxserver/radarr:5.28.0
+    image: lscr.io/linuxserver/radarr:6.0.4
     networks:
       # - mynetwork   # Comment this line if VPN is enabled
     ## Uncomment below lines if VPN is enabled
